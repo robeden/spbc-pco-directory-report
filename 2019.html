@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>
+    html, * {font-family: lato, sans-serif; line-height:1.4em;}
+    @page 	{margin: .5in 0;}   /*-- PDF margin reset --*/
+    body 		{margin: 0;}
+    
+    /*-- Baseline Fonts --*/
+    h1 			{font-size: 14.5pt; font-weight: bold;} 	/*-- Report Title --*/
+    h2 			{font-size: 13.5pt;} 											/*-- Household Name --*/
+    h3 			{font-size: 10.5pt; font-weight:normal;} 	/*-- Household Address --*/
+    li 			{font-size: 9pt;} 												/*-- List Info, Person's Info --*/
+    li.name	{font-size: 10.5pt;} 											/*-- Person's Name --*/
+    .btn		{font-size: 9pt; font-weight: bold;} 			/*-- Print Button --*/
+    
+    /*-- Baseline Spacing --*/
+    .header h1 	{margin: 0 0 1em;} 			/*-- Report Title --*/
+    .main h2 		{margin: 0 1em 0 0;} 		/*-- Household Name --*/
+    .main h3 		{margin: 0;} 						/*-- Household Address --*/
+    li.name			{margin-bottom: .25em;}	/*-- Person's Name --*/
+    
+    .household-item 					{margin-bottom: 1.5em; page-break-inside: avoid;}
+    .household-details:after 	{content: "";display: table;clear: both;}
+    
+    .item-header 					{background: rgb(238, 238, 238); border: 1px solid #eeeeee; clear: both; padding:0.875em 1.4em;}
+    .item-header:after 		{content: "";display: table;clear: both;}
+    .item-header h2 			{float:left;}
+    .item-header h3 			{float:right;}
+    ul.list-info 					{list-style:none; margin: 0 0 1.5em 0; padding: 0;}
+    
+    .adults 		{clear:both; padding: 1.5em 0 0 0; width: 100%%}
+    .children 	{border-top: 1px dashed rgb(200,200,200); clear:both; padding:1.5em 0 0; width:100%;}
+    
+    .entry 						{float:left; margin:0 0 1.5em 0; padding-left: 1.5em; width: 250px;}
+    .entry:after 			{content: "";display: table;clear: both;}
+    .children .entry 	{margin: 0 0 1.5em 0; padding-left: 1.5em;} 
+    .avatar 					{border: 3px solid rgb(221, 221, 221); float:left; margin-right: 1em; width: 3.6em;}
+    .entry ul 				{float:left; list-style:none; margin:0; padding:0;}
+    li.email					{overflow-wrap: break-word; width: 200px; word-wrap: break-word;} /*-- allows long emails to break into multiple lines --*/
+    
+    /*----- Font size equivalents for screen. This provides a more accurate preview of print sizes on a monitor ----*/
+    @media screen {
+	    h1 			{font-size: 20px; font-weight: bold; margin-top:0;}
+      h2 			{font-size: 18px;}
+      h3 			{font-size: 14px; font-weight:normal;}
+      h4 			{font-size: 14px font-weight: bold;}
+      li 			{font-size: 12px;}
+      li.name	{font-size: 14px; font-weight: bold; margin-bottom: 4px;}
+      .btn		{font-size: 12px;}
+      
+      /*----- The wrapper class controls the preview frame in the HTML generated report. ----*/
+      /*----- Please note that PDFs are generated in portrait orientation. To print in landscape, generate the report in HTML and print from your browser -----*/ 
+      /*----- Portrait view = max-width: 720px; Landscape view = max-width: 1000px ----*/
+			.wrapper 	{padding: 1.5em; border: 1px solid rgb(204,204,204); margin:1.5em auto; max-width:1000px;}
+      
+      .alert {background-color: #eff4fd; color: #8a6d3b; display: flex; flex-direction: row-reverse; list-style: none; margin-bottom: 1.25em; margin-top: 0; padding: 1em; text-align:right;}
+      .alert li {margin-left: 32px;}
+      .alert a.btn {background: #5282e5; border-radius: 3px; color: #fff; padding: 0.7em; text-decoration: none;}
+      .alert a.btn:hover {background: #6283c1;}
+    }
+    
+    
+    @media print {
+      .no-print {display: none;}		/*----- Apply this class to any element you do not want on the print view ----*/
+      body {margin: .5in;}					/*----- Adjust this to change the page margins for printing ----*/
+    }
+    
+  </style>
+</head>
+
+<body>
+  <!------   print to PDF bar   ---->
+  <div class="no-print">
+      <ul class="alert" role="alert">
+        <li>
+        	<a href="https://people.planningcenteronline.com/reports/{{ report.id }}.pdf?list_id={{list.id}}" class="btn">Print to PDF</a>
+    		</li>
+    	</ul>    
+    </div>
+  <!----- END print to PDF bar ----->
+  
+  <div class="wrapper">
+    <div class="main">
+    {% for household in households %}
+
+      <div class="household-item">
+        
+        <div class="item-header">
+          <h2>
+            {{ household.primary_contact.last_name }}, {{ household.primary_contact.first_name }}
+          </h2>
+<!--          <h2>{{ household.name }}</h2> -->
+          {% if household.primary_address.postal_address.size > 0 %}
+            <h3>{{ household.primary_address.postal_address }}</h3>
+          {% endif %}
+        </div>
+        
+
+        <div class="household-details">  
+          
+            {% if household.adults.size > 0 %}
+            <div class="adults">
+              <!--- List Primary Contact First -->
+              
+              {% for adult in household.adults %}
+              {% if adult.id == household.primary_contact.id %}
+              <div class="entry">
+<!--                <img class="avatar" src="{{ adult.photo_url}}">-->
+                <ul>
+                  <li class="name">                  
+                    {{ adult.first_name }}
+                    {% if adult.last_name != household.primary_contact.last_name %}{{ adult.last_name }}{% endif %}
+                  </li>
+                  <li>{{ adult.primary_phone_number }}</li>
+                  <li class="email">{{ adult.primary_email }}</li>
+                </ul>
+              </div>
+              {% endif %}    
+              {% endfor %}
+
+              <!-- End Listing the primary contact -->
+
+              <!-- List all adults with the exception of the primary -->
+                {% for adult in household.adults %}
+                {% unless adult.id == household.primary_contact.id %}
+              <div class="entry">
+<!--                <img class="avatar" src="{{ adult.photo_url}}">-->
+                <ul>
+                  <li class="name">                  
+                    {{ adult.first_name }}
+                    {% if adult.last_name != household.primary_contact.last_name %}{{ adult.last_name }}{% endif %}
+                  </li>
+                  <li>{{ adult.primary_phone_number }}</li>
+                  <li class="email">{{ adult.primary_email }}</li>
+                </ul>
+              </div> 
+              {% endunless %}   
+              {% endfor %}
+              <!-- End Listing all adults with the exception of the primary -->
+            </div>
+            {% endif %}
+
+            {% if household.active_children.size > 0 %}
+            <div class="children">            
+              {% for child in household.active_children %}
+              <div class="entry">
+<!--                <img class="avatar" src="{{ child.photo_url}}">-->
+                <ul>
+                  <li class="name">
+                    {{ child.first_name }}
+                    {% if child.last_name != household.primary_contact.last_name %}{{ child.last_name }}{% endif %}
+                  </li>
+                  <li>{{ child.primary_phone_number }}</li>
+                  <li class="email">{{ child.primary_email }}</li>
+                  <li>{{ child.age }}</li>
+                  <li>{{ child.grade_name }}</li>
+                </ul>
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+
+    		</div>
+       </div>
+
+    {% endfor %}
+    </div>      
+  </div>  
+</body>
+</html>
