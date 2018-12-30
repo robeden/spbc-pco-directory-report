@@ -89,9 +89,30 @@
         
         <div class="item-header">
           <h2>
+            <!--
+              Household "title", example: "Eden, Rob and Shannon"
+              
+              The primary is easy, but it's difficult to tell who the spouse is, or
+              if there is a spouse. The only solution I can find right now (2018-12-30)
+              is to go through adults and see if the anniversary matches.
+              -->
             {{ household.primary_contact.last_name }}, {{ household.primary_contact.first_name }}
+            
+            
+            {% capture primary_anniversary %}{{ household.primary_contact.anniversary | date: "%Y-%m-%d" }}{% endcapture %}
+            
+            {% for adult in household.adults %}
+              {% unless adult.id == household.primary_contact.id %}
+<!--                {% unless adult.inactive %}-->
+                <!-- NOTE: Comparing dates with '==' didn't work for me, so capture
+                           in strings and compare those. -->
+                {% capture other_anniversary %}{{ adult.anniversary | date: "%Y-%m-%d" }}{% endcapture %}
+                
+                {% if primary_anniversary == other_anniversary %} and {{ adult.first_name }}{% break %}{% endif %}
+<!--                {% endunless %}-->
+              {% endunless %}
+            {% endfor %}
           </h2>
-<!--          <h2>{{ household.name }}</h2> -->
           {% if household.primary_address.postal_address.size > 0 %}
             <h3>{{ household.primary_address.postal_address }}</h3>
           {% endif %}
@@ -113,7 +134,9 @@
                     {{ adult.first_name }}
                     {% if adult.last_name != household.primary_contact.last_name %}{{ adult.last_name }}{% endif %}
                   </li>
+                  {% if adult.primary_phone_number.size > 0 %}
                   <li>{{ adult.primary_phone_number }}</li>
+                  {% endif %}
                   <li class="email">{{ adult.primary_email }}</li>
                 </ul>
               </div>
@@ -125,6 +148,7 @@
               <!-- List all adults with the exception of the primary -->
                 {% for adult in household.adults %}
                 {% unless adult.id == household.primary_contact.id %}
+                {% unless adult.inactive %}
               <div class="entry">
 <!--                <img class="avatar" src="{{ adult.photo_url}}">-->
                 <ul>
@@ -137,6 +161,7 @@
                 </ul>
               </div> 
               {% endunless %}   
+              {% endunless %}   
               {% endfor %}
               <!-- End Listing all adults with the exception of the primary -->
             </div>
@@ -145,6 +170,7 @@
             {% if household.active_children.size > 0 %}
             <div class="children">            
               {% for child in household.active_children %}
+              {% unless child.inactive %}
               <div class="entry">
 <!--                <img class="avatar" src="{{ child.photo_url}}">-->
                 <ul>
@@ -154,10 +180,11 @@
                   </li>
                   <li>{{ child.primary_phone_number }}</li>
                   <li class="email">{{ child.primary_email }}</li>
-                  <li>{{ child.age }}</li>
-                  <li>{{ child.grade_name }}</li>
+<!--                  <li>{{ child.age }}</li>
+                  <li>{{ child.grade_name }}</li>-->
                 </ul>
               </div>
+              {% endunless %}
               {% endfor %}
             </div>
             {% endif %}
