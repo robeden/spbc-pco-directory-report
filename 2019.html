@@ -135,7 +135,21 @@
                     {% if adult.last_name != household.primary_contact.last_name %}{{ adult.last_name }}{% endif %}
                   </li>
                   {% if adult.primary_phone_number.size > 0 %}
-                  <li>{{ adult.primary_phone_number }}</li>
+                    <!--
+                      Make sure phone numbers are formatted nicely. 
+                      Input may be (real world) stuff like:
+                        - 2178988700
+                        - 217-898-8700
+                        - 217898-8700
+                        - 12178988700
+                      -->
+                    <!-- Remove non-number tokens -->
+                    {% capture phone_temp %}{{ adult.primary_phone_number | remove: "-" | remove: "(" | remove: ")" | remove: "+" }}{% endcapture %}
+                    <!-- Ensure 10 digits, prepend "217" if only 7 -->
+                    {% if phone_temp.size == 7 %}
+                      {% capture phone_temp %}217{{ phone_temp }}{% endcapture %}
+                    {% endif %}
+                    <li>({{phone_temp | slice: 0, 3}}) {{phone_temp | slice: 3, 3}}-{{phone_temp | slice: -4, 4}}</li>
                   {% endif %}
                   <li class="email">{{ adult.primary_email }}</li>
                 </ul>
@@ -156,7 +170,22 @@
                     {{ adult.first_name }}
                     {% if adult.last_name != household.primary_contact.last_name %}{{ adult.last_name }}{% endif %}
                   </li>
-                  <li>{{ adult.primary_phone_number }}</li>
+                  {% if adult.primary_phone_number.size > 0 %}
+                    <!--
+                      Make sure phone numbers are formatted nicely. 
+                      Input may be (real world) stuff like:
+                        - 2178988700
+                        - 217-898-8700
+                        - 217898-8700
+                        - 12178988700
+                      -->
+                    <!-- Remove non-number tokens -->
+                    {% capture phone_temp %}{{ adult.primary_phone_number | remove: "-" | remove: "(" | remove: ")" | remove: "+" }}{% endcapture %}
+                    <!-- Ensure 10 digits, prepend "217" if only 7 -->
+                    {% if phone_temp.size == 7 %}
+                      {% capture phone_temp %}217{{ phone_temp }}{% endcapture %}
+                    {% endif %}
+                    <li>({{phone_temp | slice: 0, 3}}) {{phone_temp | slice: 3, 3}}-{{phone_temp | slice: -4, 4}}</li>
                   <li class="email">{{ adult.primary_email }}</li>
                 </ul>
               </div> 
@@ -178,7 +207,22 @@
                     {{ child.first_name }}
                     {% if child.last_name != household.primary_contact.last_name %}{{ child.last_name }}{% endif %}
                   </li>
-                  <li>{{ child.primary_phone_number }}</li>
+                  {% if child.primary_phone_number.size > 0 %}
+                    <!--
+                      Make sure phone numbers are formatted nicely. 
+                      Input may be (real world) stuff like:
+                        - 2178988700
+                        - 217-898-8700
+                        - 217898-8700
+                        - 12178988700
+                      -->
+                    <!-- Remove non-number tokens -->
+                    {% capture phone_temp %}{{ child.primary_phone_number | remove: "-" | remove: "(" | remove: ")" | remove: "+" }}{% endcapture %}
+                    <!-- Ensure 10 digits, prepend "217" if only 7 -->
+                    {% if phone_temp.size == 7 %}
+                      {% capture phone_temp %}217{{ phone_temp }}{% endcapture %}
+                    {% endif %}
+                    <li>({{phone_temp | slice: 0, 3}}) {{phone_temp | slice: 3, 3}}-{{phone_temp | slice: -4, 4}}</li>
                   <li class="email">{{ child.primary_email }}</li>
 <!--                  <li>{{ child.age }}</li>
                   <li>{{ child.grade_name }}</li>-->
