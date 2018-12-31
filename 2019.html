@@ -145,6 +145,11 @@
                       -->
                     <!-- Remove non-number tokens -->
                     {% capture phone_temp %}{{ adult.primary_phone_number | remove: "-" | remove: "(" | remove: ")" | remove: "+" }}{% endcapture %}
+                    <!-- Remove leading 1 -->
+                    {% capture first_char %}{{ phone_temp | slice: 0 }}{% endcapture %}
+                    {% if first_char == "1" %}
+                      {% capture phone_temp %}{{ phone_temp | replace_first: "1", "" }}{% endcapture %}
+                    {% endif %}
                     <!-- Ensure 10 digits, prepend "217" if only 7 -->
                     {% if phone_temp.size == 7 %}
                       {% capture phone_temp %}217{{ phone_temp }}{% endcapture %}
@@ -181,11 +186,17 @@
                       -->
                     <!-- Remove non-number tokens -->
                     {% capture phone_temp %}{{ adult.primary_phone_number | remove: "-" | remove: "(" | remove: ")" | remove: "+" }}{% endcapture %}
+                    <!-- Remove leading 1 -->
+                    {% capture first_char %}{{ phone_temp | slice: 0 }}{% endcapture %}
+                    {% if first_char == "1" %}
+                      {% capture phone_temp %}{{ phone_temp | replace_first: "1", "" }}{% endcapture %}
+                    {% endif %}
                     <!-- Ensure 10 digits, prepend "217" if only 7 -->
                     {% if phone_temp.size == 7 %}
                       {% capture phone_temp %}217{{ phone_temp }}{% endcapture %}
                     {% endif %}
                     <li>({{phone_temp | slice: 0, 3}}) {{phone_temp | slice: 3, 3}}-{{phone_temp | slice: -4, 4}}</li>
+                  {% endif %}
                   <li class="email">{{ adult.primary_email }}</li>
                 </ul>
               </div> 
@@ -218,11 +229,17 @@
                       -->
                     <!-- Remove non-number tokens -->
                     {% capture phone_temp %}{{ child.primary_phone_number | remove: "-" | remove: "(" | remove: ")" | remove: "+" }}{% endcapture %}
+                    <!-- Remove leading 1 -->
+                    {% capture first_char %}{{ phone_temp | slice: 0 }}{% endcapture %}
+                    {% if first_char == "1" %}
+                      {% capture phone_temp %}{{ phone_temp | replace_first: "1", "" }}{% endcapture %}
+                    {% endif %}
                     <!-- Ensure 10 digits, prepend "217" if only 7 -->
                     {% if phone_temp.size == 7 %}
                       {% capture phone_temp %}217{{ phone_temp }}{% endcapture %}
                     {% endif %}
                     <li>({{phone_temp | slice: 0, 3}}) {{phone_temp | slice: 3, 3}}-{{phone_temp | slice: -4, 4}}</li>
+                  {% endif %}
                   <li class="email">{{ child.primary_email }}</li>
 <!--                  <li>{{ child.age }}</li>
                   <li>{{ child.grade_name }}</li>-->
